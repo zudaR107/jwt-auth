@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# Build Directory
+jwt_auth_server/build

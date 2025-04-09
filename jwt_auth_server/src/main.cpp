@@ -1,10 +1,8 @@
-#include "SHA256.h"
+#include "Base64URL.h"
 #include <iostream>
 
 int main() {
-    std::string input = "mypassword";
-    std::string hashed = SHA256::hash(input);
-
-    std::cout << "SHA256(\"" << input << "\") = " << hashed << "\n";
-    return 0;
+    std::string raw = "{\"alg\":\"RS256\",\"typ\":\"JWT\"}";
+    std::string encoded = Base64URL::encode(raw);
+    std::cout << encoded << std::endl;
 }

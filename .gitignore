@@ -33,3 +33,6 @@
 
 # Build Directory
 jwt_auth_server/build
+
+# VS Code Settings
+.vscode

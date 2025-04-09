@@ -112,6 +112,15 @@ BigInt RSA::sign(const BigInt& hash, const RSAPrivateKey& key) {
     return BigInt::modPow(hash, key.d, key.n);
 }
 
-bool RSA::verify(const BigInt& hash, const BigInt& signature, const RSAPublicKey& key) {
-    return BigInt::modPow(signature, key.e, key.n) == hash;
+bool RSA::verify(const std::string& messageHashHex, const BigInt& signature, const RSAPublicKey& key) {
+    // Расшифровываем подпись
+    BigInt decryptedHashInt = BigInt::modPow(signature, key.e, key.n);
+    std::string decryptedHashHex = decryptedHashInt.toString(16);
+
+    // Дополняем нулями до 64 символов (SHA-256 в hex)
+    while (decryptedHashHex.length() < 64)
+        decryptedHashHex = "0" + decryptedHashHex;
+
+    return decryptedHashHex == messageHashHex;
 }
+

@@ -19,5 +19,8 @@ public:
     static BigInt decrypt(const BigInt& cipher, const RSAPrivateKey& key);
 
     static BigInt sign(const BigInt& hash, const RSAPrivateKey& key);
-    static bool verify(const BigInt& hash, const BigInt& signature, const RSAPublicKey& key);
+    static bool verify(const std::string& messageHashHex, 
+                       const BigInt& signature, 
+                       const RSAPublicKey& key);
+
 };

@@ -4,11 +4,13 @@
 
 class BigInt {
 public:
-    BigInt();                         // 0
-    BigInt(int value);                // от int (включая отрицательные)
-    BigInt(const std::string& str);   // из строки
+    BigInt();                                   // 0
+    BigInt(int value);                          // от int (включая отрицательные)
+    BigInt(const std::string& str);             // из строки
+    BigInt(const std::string& str, int base);   // из строки в системе счисления base
 
     std::string toString() const;
+    std::string toString(int base) const;
 
     // Арифметика
     BigInt operator+(const BigInt& other) const;

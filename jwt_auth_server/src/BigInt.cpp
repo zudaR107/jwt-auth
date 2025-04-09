@@ -28,12 +28,83 @@ BigInt::BigInt(const std::string& str) {
     trim();
 }
 
+BigInt::BigInt(const std::string& str, int base) {
+    if (base != 10 && base != 16) {
+        throw std::invalid_argument("Unsupported base");
+    }
+
+    std::string s = str;
+    negative = false;
+
+    if (!s.empty() && s[0] == '-') {
+        negative = true;
+        s = s.substr(1);
+    }
+
+    if (base == 10) {
+        // обычный десятичный парсинг, переиспользуем текущий конструктор
+        *this = BigInt(s);
+        if (negative) *this = -(*this);
+        return;
+    }
+
+    // парсинг hex
+    BigInt result;
+    BigInt basePow(1);
+
+    for (auto it = s.rbegin(); it != s.rend(); ++it) {
+        char c = *it;
+        int value = 0;
+
+        if (c >= '0' && c <= '9') value = c - '0';
+        else if (c >= 'a' && c <= 'f') value = 10 + (c - 'a');
+        else if (c >= 'A' && c <= 'F') value = 10 + (c - 'A');
+        else throw std::invalid_argument("Invalid character in hex string");
+
+        result = result + basePow * BigInt(value);
+        basePow = basePow * 16;
+    }
+
+    if (negative) result = -result;
+
+    *this = result;
+}
+
 std::string BigInt::toString() const {
     std::ostringstream oss;
     if (negative && !isZero()) oss << "-";
     for (auto it = digits.rbegin(); it != digits.rend(); ++it)
         oss << *it;
     return oss.str();
+}
+
+std::string BigInt::toString(int base) const {
+    if (base != 10 && base != 16)
+        throw std::invalid_argument("Unsupported base");
+
+    if (isZero()) return "0";
+
+    BigInt temp = *this;
+    temp.negative = false;
+
+    std::string result;
+    BigInt b(base);
+
+    while (!temp.isZero()) {
+        BigInt digit = temp % b;
+        int d = std::stoi(digit.toString());
+
+        char c;
+        if (d < 10) c = '0' + d;
+        else c = 'a' + (d - 10);
+
+        result += c;
+        temp = temp / b;
+    }
+
+    if (negative) result += '-';
+    std::reverse(result.begin(), result.end());
+    return result;
 }
 
 void BigInt::trim() {

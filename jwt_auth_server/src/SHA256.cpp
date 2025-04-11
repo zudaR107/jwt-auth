@@ -1,10 +1,11 @@
-#include "SHA256.h"
+#include "../include/SHA256.h"
 #include <vector>
 #include <array>
 #include <sstream>
 #include <iomanip>
 #include <cstring>
 #include <cstdint>
+#include <iostream>
 
 namespace {
     const std::array<uint32_t, 64> k = {
@@ -60,10 +61,7 @@ namespace {
 
         std::vector<uint8_t> padded(input.begin(), input.end());
         padded.push_back(0x80);
-
-        while ((padded.size() + 8) % 64 != 0)
-            padded.push_back(0x00);
-
+        while ((padded.size() + 8) % 64 != 0) padded.push_back(0x00);
         for (int i = 7; i >= 0; --i)
             padded.push_back((bit_length >> (i * 8)) & 0xFF);
 
@@ -71,31 +69,21 @@ namespace {
     }
 
     uint32_t to_uint32(const uint8_t* bytes) {
-        return (bytes[0] << 24) | (bytes[1] << 16) |
-               (bytes[2] << 8) | bytes[3];
-    }
-
-    void from_uint32(uint32_t val, uint8_t* bytes) {
-        bytes[0] = (val >> 24) & 0xFF;
-        bytes[1] = (val >> 16) & 0xFF;
-        bytes[2] = (val >> 8) & 0xFF;
-        bytes[3] = val & 0xFF;
+        return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
     }
 }
 
 std::string SHA256::hash(const std::string& input) {
+    std::cout << "[SHA256] --- Начало хеширования ---" << std::endl;
+    std::cout << "[SHA256] Входная строка: " << input << std::endl;
+
     std::array<uint32_t, 8> h = {
-        0x6a09e667,
-        0xbb67ae85,
-        0x3c6ef372,
-        0xa54ff53a,
-        0x510e527f,
-        0x9b05688c,
-        0x1f83d9ab,
-        0x5be0cd19
+        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+        0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
     };
 
     std::vector<uint8_t> data = pad(input);
+    std::cout << "[SHA256] Размер после паддинга: " << data.size() << " байт" << std::endl;
 
     for (size_t i = 0; i < data.size(); i += 64) {
         uint32_t w[64];
@@ -107,14 +95,10 @@ std::string SHA256::hash(const std::string& input) {
             w[j] = small_sigma1(w[j - 2]) + w[j - 7] +
                    small_sigma0(w[j - 15]) + w[j - 16];
 
-        uint32_t a = h[0];
-        uint32_t b = h[1];
-        uint32_t c = h[2];
-        uint32_t d = h[3];
-        uint32_t e = h[4];
-        uint32_t f = h[5];
-        uint32_t g = h[6];
-        uint32_t h_val = h[7];
+        uint32_t a = h[0], b = h[1], c = h[2], d = h[3];
+        uint32_t e = h[4], f = h[5], g = h[6], h_val = h[7];
+
+        std::cout << "[SHA256] Обработка блока #" << i / 64 << std::endl;
 
         for (int j = 0; j < 64; ++j) {
             uint32_t temp1 = h_val + big_sigma1(e) + ch(e, f, g) + k[j] + w[j];
@@ -128,16 +112,14 @@ std::string SHA256::hash(const std::string& input) {
             c = b;
             b = a;
             a = temp1 + temp2;
+
+            if (j < 4 || j > 59) { // лог только в начале и в конце
+                std::cout << "Round " << j << ": a=" << std::hex << a << " e=" << e << std::dec << std::endl;
+            }
         }
 
-        h[0] += a;
-        h[1] += b;
-        h[2] += c;
-        h[3] += d;
-        h[4] += e;
-        h[5] += f;
-        h[6] += g;
-        h[7] += h_val;
+        h[0] += a; h[1] += b; h[2] += c; h[3] += d;
+        h[4] += e; h[5] += f; h[6] += g; h[7] += h_val;
     }
 
     std::ostringstream oss;
@@ -145,5 +127,9 @@ std::string SHA256::hash(const std::string& input) {
         oss << std::hex << std::setw(8) << std::setfill('0') << val;
     }
 
-    return oss.str();
+    std::string result = oss.str();
+    std::cout << "[SHA256] Итоговый хеш: " << result << std::endl;
+    std::cout << "[SHA256] --- Завершено ---" << std::endl;
+
+    return result;
 }

@@ -1,7 +1,6 @@
-#include "KeyStorage.h"
-#include "SHA256.h"
+#include "../include/KeyStorage.h"
+#include "../include/SHA256.h"
 #include <fstream>
-#include <sstream>
 #include <iostream>
 
 static const std::string PRIV_FILE = "rsa_private.key";

@@ -1,6 +1,6 @@
-#include "HttpServer.h"
-#include "Database.h"
-#include "KeyStorage.h"
+#include "../include/HttpServer.h"
+#include "../include/Database.h"
+#include "../include/KeyStorage.h"
 
 int main() {
     Database::init("users.db");

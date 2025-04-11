@@ -6,7 +6,6 @@
 #include <ctime>
 #include <sstream>
 #include <iostream>
-#include <iomanip>
 
 std::string JWT::createAccessToken(const std::string& subject, uint64_t expirationSeconds, const RSAPrivateKey& privKey) {
     std::string headerStr = R"({"alg":"RS256","typ":"JWT"})";

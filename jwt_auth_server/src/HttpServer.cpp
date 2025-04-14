@@ -244,18 +244,29 @@ void HttpServer::start(int port) {
     server.Post("/logout", [](const httplib::Request& req, httplib::Response& res) {
         std::cout << "\n[SERVER] --- /logout endpoint called ---\n";
     
-        std::string refreshToken = extractField(req.body, "refresh_token");
-        if (refreshToken.empty()) {
-            std::cerr << "[ERROR] Missing 'refresh_token' in request body\n";
+        if (!req.has_header("Authorization")) {
+            std::cerr << "[ERROR] Missing Authorization header\n";
             res.status = 400;
-            res.set_content("Missing 'refresh_token'", "text/plain");
+            res.set_content("Missing Authorization header", "text/plain");
             return;
         }
     
-        std::cout << "[INPUT] Provided refresh token: " << refreshToken << "\n";
+        std::string authHeader = req.get_header_value("Authorization");
+        std::cout << "[HEADER] Authorization: " << authHeader << "\n";
+    
+        std::string prefix = "Bearer ";
+        if (authHeader.rfind(prefix, 0) != 0) {
+            std::cerr << "[ERROR] Authorization header must start with 'Bearer '\n";
+            res.status = 400;
+            res.set_content("Invalid Authorization header format", "text/plain");
+            return;
+        }
+    
+        std::string refreshToken = authHeader.substr(prefix.size());
+        std::cout << "[INPUT] Extracted refresh token: " << refreshToken << "\n";
     
         RSAPublicKey pubKey;
-        RSAPrivateKey privKey; // not used
+        RSAPrivateKey privKey;
         if (!KeyStorage::loadKeys(pubKey, privKey)) {
             std::cerr << "[ERROR] Failed to load keys\n";
             res.status = 500;
@@ -307,7 +318,7 @@ void HttpServer::start(int port) {
         std::cout << "[SERVER] --- /logout completed ---\n";
     
         res.set_content("Logged out successfully", "text/plain");
-    });        
+    });            
 
     std::cout << "[HttpServer] Сервер запущен на порту " << port << std::endl;
     server.listen("0.0.0.0", port);

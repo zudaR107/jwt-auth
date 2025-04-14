@@ -2,44 +2,175 @@
 #include <vector>
 #include <string>
 
+/**
+ * @brief Класс для работы с большими целыми числами произвольной длины (Big Integer).
+ *
+ * Реализация поддерживает знаковые числа (отрицательные и положительные), все базовые арифметические операции,
+ * операции сравнения, возведение в степень по модулю и вычисление НОД.
+ * Используется представление, в котором младшие цифры находятся в начале вектора.
+ */
 class BigInt {
 public:
-    BigInt();                                   // 0
-    BigInt(int value);                          // от int (включая отрицательные)
-    BigInt(const std::string& str);             // из строки
-    BigInt(const std::string& str, int base);   // из строки в системе счисления base
+    /**
+     * @brief Конструктор по умолчанию. Создаёт число 0.
+     */
+    BigInt();
 
+    /**
+     * @brief Конструктор из целого числа int.
+     * @param value Целое число (может быть отрицательным).
+     *
+     * Разбивает число на десятичные цифры и сохраняет их в векторе digits.
+     */
+    BigInt(int value);
+
+    /**
+     * @brief Конструктор из строки (десятичное представление).
+     * @param str Строка, представляющая число, например "12345" или "-987".
+     *
+     * Последовательно считывает символы строки, преобразуя их в цифры, начиная с конца строки.
+     */
+    BigInt(const std::string& str);
+
+    /**
+     * @brief Конструктор из строки с указанной системой счисления.
+     * @param str Строка с числом.
+     * @param base Основание системы счисления (поддерживаются только 10 и 16).
+     *
+     * В случае hex преобразует каждую цифру в десятичное значение, домножает на соответствующую степень 16 и накапливает результат.
+     */
+    BigInt(const std::string& str, int base);
+
+    /**
+     * @brief Преобразует число в строку в десятичной системе.
+     */
     std::string toString() const;
+
+    /**
+     * @brief Преобразует число в строку в указанной системе счисления.
+     * @param base Основание системы счисления (10 или 16).
+     *
+     * Повторно делит число на основание, записывая остатки.
+     */
     std::string toString(int base) const;
 
-    // Арифметика
+    // === Арифметические операции ===
+
+    /**
+     * @brief Сложение двух чисел.
+     * @param other Второе слагаемое.
+     * @return Сумма чисел.
+     *
+     * Если знаки равны — складываются поразрядно с учётом переноса.
+     * Если знаки разные — используется вычитание с соответствующей сменой знака.
+     */
     BigInt operator+(const BigInt& other) const;
+
+    /**
+     * @brief Вычитание одного числа из другого.
+     * @param other Вычитаемое.
+     * @return Разность чисел.
+     *
+     * Если знаки разные — происходит сложение.
+     * Если одинаковые — сравниваются модули и выполняется поразрядное вычитание с заимствованием.
+     */
     BigInt operator-(const BigInt& other) const;
+
+    /**
+     * @brief Умножение двух чисел.
+     * @param other Второй множитель.
+     * @return Произведение.
+     *
+     * Алгоритм умножения "в столбик": каждый разряд первого числа умножается на каждый разряд второго.
+     * Результаты складываются с учётом сдвига и переноса.
+     */
     BigInt operator*(const BigInt& other) const;
+
+    /**
+     * @brief Деление одного числа на другое.
+     * @param other Делитель.
+     * @return Частное.
+     *
+     * Используется алгоритм "деления в столбик":
+     * — поразрядно добавляется к текущему значению;
+     * — бинарным поиском подбирается максимально возможное значение разряда.
+     */
     BigInt operator/(const BigInt& other) const;
+
+    /**
+     * @brief Остаток от деления.
+     * @param other Делитель.
+     * @return Остаток.
+     *
+     * Вычисляется как `*this - (*this / other) * other`.
+     */
     BigInt operator%(const BigInt& other) const;
 
-    // Возведение в степень по модулю
+    /**
+     * @brief Быстрое возведение в степень по модулю.
+     * @param base Основание.
+     * @param exp Показатель степени.
+     * @param mod Модуль.
+     * @return (base^exp) % mod.
+     *
+     * Используется алгоритм "быстрого возведения в степень":
+     * - при каждой итерации проверяется, чётный ли exp;
+     * - если нечётный — результат *= base;
+     * - затем base *= base и exp >>= 1 (делится пополам);
+     * - все операции производятся по модулю mod.
+     */
     static BigInt modPow(BigInt base, BigInt exp, const BigInt& mod);
+
+    /**
+     * @brief Наибольший общий делитель (НОД).
+     * @param a Первое число.
+     * @param b Второе число.
+     * @return НОД(a, b).
+     *
+     * Используется алгоритм Евклида:
+     * Пока b ≠ 0, присваиваем a = b, b = a % b.
+     */
     static BigInt gcd(BigInt a, BigInt b);
 
-    // Сравнение
-    bool operator<(const BigInt& other) const;
-    bool operator>(const BigInt& other) const;
-    bool operator==(const BigInt& other) const;
-    bool operator!=(const BigInt& other) const;
-    bool operator<=(const BigInt& other) const;
-    bool operator>=(const BigInt& other) const;
+    // === Операторы сравнения ===
 
-    BigInt operator-() const; // унарный минус
+    bool operator<(const BigInt& other) const;   ///< Меньше
+    bool operator>(const BigInt& other) const;   ///< Больше
+    bool operator==(const BigInt& other) const;  ///< Равно
+    bool operator!=(const BigInt& other) const;  ///< Не равно
+    bool operator<=(const BigInt& other) const;  ///< Меньше или равно
+    bool operator>=(const BigInt& other) const;  ///< Больше или равно
 
+    /**
+     * @brief Унарный минус.
+     * @return То же самое число, но с противоположным знаком.
+     */
+    BigInt operator-() const;
+
+    /**
+     * @brief Проверка на равенство нулю.
+     */
     bool isZero() const;
+
+    /**
+     * @brief Проверка, является ли число отрицательным.
+     */
     bool isNegative() const;
 
 private:
-    std::vector<int> digits; // младший разряд — в начале
-    bool negative = false;
+    std::vector<int> digits; ///< Вектор цифр в десятичной системе (младшие разряды первыми)
+    bool negative = false;   ///< Признак отрицательности числа
 
+    /**
+     * @brief Удаляет ведущие нули.
+     */
     void trim();
-    static int compareAbs(const BigInt& a, const BigInt& b); // сравнение по модулю
+
+    /**
+     * @brief Сравнение абсолютных значений двух чисел.
+     * @param a Первое число.
+     * @param b Второе число.
+     * @return -1, если |a| < |b|; 0 — если равны; 1 — если |a| > |b|.
+     */
+    static int compareAbs(const BigInt& a, const BigInt& b);
 };

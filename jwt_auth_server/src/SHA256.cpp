@@ -8,6 +8,11 @@
 #include <iostream>
 
 namespace {
+    /**
+     * @brief Константы, используемые в каждом из 64 раундов SHA-256.
+     *
+     * Эти значения представляют собой первые 32 бита дробных частей кубических корней первых 64 простых чисел.
+     */
     const std::array<uint32_t, 64> k = {
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
         0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -27,34 +32,70 @@ namespace {
         0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
     };
 
+    /**
+     * @brief Побитовый циклический сдвиг вправо.
+     */
     inline uint32_t rotr(uint32_t x, uint32_t n) {
         return (x >> n) | (x << (32 - n));
     }
 
+    /**
+     * @brief Вычисляет функцию выбора: выбирает `y`, если `x`, иначе `z`.
+     *
+     * Формально: (x AND y) XOR (NOT x AND z)
+     */
     inline uint32_t ch(uint32_t x, uint32_t y, uint32_t z) {
         return (x & y) ^ (~x & z);
     }
 
+    /**
+     * @brief Мажоритарная функция: возвращает значение, встречающееся чаще всего среди x, y, z.
+     *
+     * Формально: (x AND y) XOR (x AND z) XOR (y AND z)
+     */
     inline uint32_t maj(uint32_t x, uint32_t y, uint32_t z) {
         return (x & y) ^ (x & z) ^ (y & z);
     }
 
+    /**
+     * @brief Функция Σ0 из SHA-256: используется в расширении блока.
+     */
     inline uint32_t big_sigma0(uint32_t x) {
         return rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22);
     }
 
+    /**
+     * @brief Функция Σ1 из SHA-256: используется в расширении блока.
+     */
     inline uint32_t big_sigma1(uint32_t x) {
         return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
     }
 
+    /**
+     * @brief Функция σ0 из SHA-256: используется при генерации w[16..63].
+     */
     inline uint32_t small_sigma0(uint32_t x) {
         return rotr(x, 7) ^ rotr(x, 18) ^ (x >> 3);
     }
 
+    /**
+     * @brief Функция σ1 из SHA-256: используется при генерации w[16..63].
+     */
     inline uint32_t small_sigma1(uint32_t x) {
         return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10);
     }
 
+    /**
+     * @brief Дополняет вход до кратного 512 бит (64 байта).
+     *
+     * Алгоритм добавляет:
+     * - Один бит `1`
+     * - 0...0 (до выравнивания)
+     * - Длину исходного сообщения в битах (64 бита)
+     *
+     * @param input Исходная строка
+     * @return Вектор байт после паддинга
+     */
     std::vector<uint8_t> pad(const std::string& input) {
         size_t original_length = input.size();
         uint64_t bit_length = original_length * 8;
@@ -68,6 +109,9 @@ namespace {
         return padded;
     }
 
+    /**
+     * @brief Преобразует 4 байта в 32-битное целое число (big-endian).
+     */
     uint32_t to_uint32(const uint8_t* bytes) {
         return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
     }

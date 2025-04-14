@@ -36,3 +36,6 @@ jwt_auth_server/build
 
 # VS Code Settings
 .vscode
+
+# Docs Directory
+jwt_auth_server/docs

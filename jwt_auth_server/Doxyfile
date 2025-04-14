@@ -1,0 +1,65 @@
+# ---- Основные параметры ----
+PROJECT_NAME           = "JWT Auth Server"
+PROJECT_BRIEF          = "Сервер аутентификации с реализацией JWT, RSA и SHA-256"
+OUTPUT_DIRECTORY       = docs
+INPUT                  = ./include ./src
+RECURSIVE              = YES
+
+# ---- Только LaTeX ----
+GENERATE_LATEX         = YES
+GENERATE_HTML          = NO
+
+# ---- Комментарии ----
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_ANON_NSPACES   = YES
+FULL_PATH_NAMES        = NO
+INLINE_SOURCES         = YES
+SOURCE_BROWSER         = YES
+
+# ---- Форматирование ----
+MARKDOWN_SUPPORT       = YES
+TAB_SIZE               = 4
+SHOW_INCLUDE_FILES     = YES
+GENERATE_TREEVIEW      = YES
+
+# ---- Графики (UML и вызовы) ----
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 2
+CLASS_DIAGRAMS         = YES
+UML_LOOK               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+CALL_GRAPH_DEPTH       = 4
+TEMPLATE_RELATIONS     = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+DOT_GRAPH_MAX_NODES    = 100
+MAX_DOT_GRAPH_DEPTH    = 0
+DOT_CLEANUP            = YES
+
+# ---- Вывод в LaTeX ----
+LATEX_OUTPUT           = latex
+GENERATE_LATEX         = YES
+USE_PDFLATEX           = YES
+PDF_HYPERLINKS         = YES
+LATEX_BATCHMODE        = NO
+LATEX_SOURCE_CODE      = YES
+LATEX_BIB_STYLE        = plain
+
+# ---- Названия ----
+OUTPUT_LANGUAGE        = Russian
+QUIET                  = NO
+WARN_IF_UNDOCUMENTED  = YES
+WARN_IF_DOC_ERROR     = YES
+WARN_NO_PARAMDOC      = NO
+
+# ---- Прочее ----
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+PREDEFINED             = DOXYGEN_SHOULD_SKIP_THIS

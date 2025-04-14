@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: JWT Auth Server
+  version: 1.0.0
+  description: >
+    Сервер авторизации на основе JWT + RSA. Реализует маршруты для регистрации, входа, обновления токенов и доступа к защищённым данным.
+
+servers:
+  - url: http://localhost:8080
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /register:
+    post:
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Пользователь зарегистрирован
+        '400':
+          description: Отсутствует имя пользователя или пароль
+        '409':
+          description: Пользователь уже существует
+
+  /login:
+    post:
+      summary: Авторизация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        '400':
+          description: Отсутствует имя пользователя или пароль
+        '401':
+          description: Неверные учетные данные
+        '500':
+          description: Ошибка при загрузке ключей
+
+  /refresh:
+    post:
+      summary: Обновление access токена
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешное обновление access токена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        '400':
+          description: Ошибка в заголовке авторизации
+        '401':
+          description: Неверный или просроченный refresh токен
+        '403':
+          description: Refresh токен в чёрном списке
+        '500':
+          description: Ошибка загрузки ключей
+
+  /logout:
+    post:
+      summary: Выход (отзыв refresh токена)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Токен успешно отозван
+        '400':
+          description: Ошибка в заголовке или теле запроса
+        '401':
+          description: Неверный или просроченный refresh токен
+        '500':
+          description: Ошибка базы данных или загрузки ключей
+
+  /secure/data:
+    get:
+      summary: Получение защищённых данных
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешный доступ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+        '400':
+          description: Неверный формат заголовка
+        '401':
+          description: Недействительный или просроченный токен
+        '500':
+          description: Ошибка загрузки ключей

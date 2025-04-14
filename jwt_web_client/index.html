@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JWT Auth Client</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>JWT Auth Client</h1>
+
+  <section>
+    <h2>Register</h2>
+    <input id="reg-username" placeholder="Username" />
+    <input id="reg-password" placeholder="Password" type="password" />
+    <button onclick="register()">Register</button>
+  </section>
+
+  <section>
+    <h2>Login</h2>
+    <input id="login-username" placeholder="Username" />
+    <input id="login-password" placeholder="Password" type="password" />
+    <button onclick="login()">Login</button>
+  </section>
+
+  <section>
+    <h2>Tokens</h2>
+    <p><strong>Access Token:</strong></p>
+    <textarea id="access-token" rows="3" readonly></textarea>
+    <p><strong>Refresh Token:</strong></p>
+    <textarea id="refresh-token" rows="3" readonly></textarea>
+  </section>
+
+  <section>
+    <h2>Actions</h2>
+    <button onclick="refresh()">Refresh Access Token</button>
+    <button onclick="getSecureData()">Get Secure Data</button>
+    <button onclick="logout()">Logout</button>
+  </section>
+
+  <section>
+    <h2>Response</h2>
+    <pre id="response"></pre>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

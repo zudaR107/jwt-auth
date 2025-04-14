@@ -1,0 +1,38 @@
+body {
+    font-family: sans-serif;
+    margin: 2em;
+    background-color: #f7f7f7;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  section {
+    margin-bottom: 2em;
+    background: #fff;
+    padding: 1em;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #ddd;
+  }
+  
+  input, textarea {
+    display: block;
+    width: 100%;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    padding: 0.5em;
+    font-family: monospace;
+  }
+  
+  button {
+    padding: 0.5em 1em;
+    margin-right: 1em;
+  }
+  
+  pre {
+    background: #eee;
+    padding: 1em;
+    white-space: pre-wrap;
+  }
+  

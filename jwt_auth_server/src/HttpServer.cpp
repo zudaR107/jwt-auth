@@ -32,8 +32,16 @@ void HttpServer::start(int port) {
     server.set_logger([](const httplib::Request& req, const httplib::Response& res) {
         std::cout << "[LOGGER] " << req.method << " " << req.path << " -> " << res.status << "\n";
     });
+
+    server.Options(R"(.*)", [](const httplib::Request&, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+        res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.status = 200;
+    });    
     
     server.Post("/register", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
         std::cout << "[REGISTER] Получен запрос: " << req.body << std::endl;
 
         std::string username = extractField(req.body, "username");
@@ -61,6 +69,7 @@ void HttpServer::start(int port) {
     });
 
     server.Post("/login", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
         std::cout << "[LOGIN] Получен запрос: " << req.body << std::endl;
 
         std::string username = extractField(req.body, "username");
@@ -119,6 +128,7 @@ void HttpServer::start(int port) {
     });
 
     server.Post("/refresh", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
         std::cout << "\n[SERVER] --- /refresh endpoint called ---\n";
     
         if (!req.has_header("Authorization")) {
@@ -186,6 +196,7 @@ void HttpServer::start(int port) {
     });    
     
     server.Get("/secure/data", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
         std::cout << "\n[SERVER] --- /secure/data endpoint called ---\n";
     
         // [1] Проверяем заголовок Authorization
@@ -242,6 +253,7 @@ void HttpServer::start(int port) {
     });
     
     server.Post("/logout", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
         std::cout << "\n[SERVER] --- /logout endpoint called ---\n";
     
         if (!req.has_header("Authorization")) {
